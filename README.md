@@ -2,7 +2,7 @@
 CustomWidgets
 
 1.LoadingDialog 
-
+```
 LoadingDialog loadingDialog;
 
 private void showLoadingDialog(Context context) {
@@ -16,3 +16,4 @@ private void hideLoadingDialog() {
         loadingDialog = null;
     }
 }
+```
