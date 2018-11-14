@@ -10,10 +10,5 @@ private void showLoadingDialog(Context context) {
     loadingDialog = new LoadingDialog(context);
 }
 
-private void hideLoadingDialog() {
-    if (loadingDialog != null) {
-        loadingDialog.hide();
-        loadingDialog = null;
-    }
-}
+loadingDialog.hide();
 ```
