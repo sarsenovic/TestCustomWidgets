@@ -6,7 +6,9 @@ CustomWidgets
 LoadingDialog loadingDialog;
 
 private void showLoadingDialog(Context context) {
-    hideLoadingDialog();
+    if (loadingDialog != null)
+        loadingDialog.hide();
+        
     loadingDialog = new LoadingDialog(context);
 }
 
