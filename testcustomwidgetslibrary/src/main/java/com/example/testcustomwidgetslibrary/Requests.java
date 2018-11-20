@@ -19,6 +19,9 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 
+/**
+ * Builds a request with customizable params.
+ */
 public class Requests {
     public static final String CONTENT_TYPE = "application/json";
     private Context context;
@@ -31,8 +34,21 @@ public class Requests {
         this.context = context;
     }
 
+    /**
+     * Builds a post request.
+     * @param context Context.
+     * @param urlString Url koji gadjamo.
+     * @param bodyParams Mapa<String, Object> parametara koji se salju.
+     * @param typeOfExpectedResponse Naziv ocekivanog tipa response-a (Moguci su jsonObject (jsonobject, object), jsonArray (jsonarray, array), String (string)).
+     * @param sendAsJSON boolean koji je true ako podatke saljemo kao jsonObject (U ovom slucaju se bodyParams automatski konvertuju u jsonObject).
+     * @param postCallback Interface za uspesno i neuspesno izvrsavanje request-a.
+     * @param showLoadingDialog boolean koji je true ako zelimo da prikazemo loading dialog.
+     * @param contentTypeString String koji predstavlja CONTENT_TYPE u request-u (Ako se ostavi prazan ovaj parametar CONTENT_TYPE se u tom slucaju ne salje).
+     * @param headerParamsMap Mapa<String, String> parametara koji se salju u header-u request-a.
+     * @param tag String koji svaki request obelezava razlicitim imenom. (Za slucaj ako u oviru jedne klase postoji vise postRequest metoda pa njima se moze pristupiti preko ovog indikatora).
+     */
     public void makePostRequest(final Context context, String urlString, Map<String, Object> bodyParams, String typeOfExpectedResponse, boolean sendAsJSON,
-                                final PostRequestListener postCallback, final boolean showLoadingDialog, String contentTypeString, Map<String, String> headerParamsMap, final String requestIndicator) {
+                                final PostRequestListener postCallback, final boolean showLoadingDialog, String contentTypeString, Map<String, String> headerParamsMap, final String tag) {
         if (urlString != null) {
 
             this.postRequestListenerCallback = postCallback;
@@ -79,12 +95,14 @@ public class Requests {
                 switch (typeOfExpectedResponse) {
 
                     case "jsonObject":
+                    case "jsonobject":
+                    case "object":
 
                         postRequestBuilder.build().getAsJSONObject(new JSONObjectRequestListener() {
                             @Override
                             public void onResponse(JSONObject response) {
                                 if (response != null) {
-                                    postCallback.onRequestLoadSuccessful(response, requestIndicator);
+                                    postCallback.onRequestLoadSuccessful(response, tag);
                                 }
                                 if (showLoadingDialog)
                                     hideLoadingDialog();
@@ -95,7 +113,7 @@ public class Requests {
 
                             @Override
                             public void onError(ANError anError) {
-                                postCallback.onRequestLoadFailed(anError, requestIndicator);
+                                postCallback.onRequestLoadFailed(anError, tag);
                                 if (showLoadingDialog)
                                     hideLoadingDialog();
 
@@ -106,12 +124,14 @@ public class Requests {
                         break;
 
                     case "jsonArray":
+                    case "jsonarray":
+                    case "array":
 
                         postRequestBuilder.build().getAsJSONArray(new JSONArrayRequestListener() {
                             @Override
                             public void onResponse(JSONArray response) {
                                 if (response != null) {
-                                    postCallback.onRequestLoadSuccessful(response, requestIndicator);
+                                    postCallback.onRequestLoadSuccessful(response, tag);
                                 }
                                 if (showLoadingDialog)
                                     hideLoadingDialog();
@@ -122,7 +142,7 @@ public class Requests {
 
                             @Override
                             public void onError(ANError anError) {
-                                postCallback.onRequestLoadFailed(anError, requestIndicator);
+                                postCallback.onRequestLoadFailed(anError, tag);
                                 if (showLoadingDialog)
                                     hideLoadingDialog();
 
@@ -133,12 +153,13 @@ public class Requests {
                         break;
 
                     case "String":
+                    case "string":
 
                         postRequestBuilder.build().getAsString(new StringRequestListener() {
                             @Override
                             public void onResponse(String response) {
                                 if (response != null) {
-                                    postCallback.onRequestLoadSuccessful(response, requestIndicator);
+                                    postCallback.onRequestLoadSuccessful(response, tag);
                                 }
                                 if (showLoadingDialog)
                                     hideLoadingDialog();
@@ -149,7 +170,7 @@ public class Requests {
 
                             @Override
                             public void onError(ANError anError) {
-                                postCallback.onRequestLoadFailed(anError, requestIndicator);
+                                postCallback.onRequestLoadFailed(anError, tag);
                                 if (showLoadingDialog)
                                     hideLoadingDialog();
 
