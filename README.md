@@ -17,7 +17,8 @@ loadingDialog.hide();
 
 
 2.CustomViews 
-\n
+```
+```
 Import fonts what you want to use in /src/main/assets/fonts
 ```
 <com.example.testcustomwidgetslibrary.CustomTextView
