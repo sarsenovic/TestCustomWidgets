@@ -19,7 +19,7 @@ loadingDialog.hide();
 2.CustomViews 
 ```
 ```
-Import fonts what you want to use in /src/main/assets/fonts
+Import fonts which you want to use in /src/main/assets/fonts
 ```
 <com.example.testcustomwidgetslibrary.CustomTextView
         android:layout_width="wrap_content"
