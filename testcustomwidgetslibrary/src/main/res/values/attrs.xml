@@ -30,4 +30,8 @@
         <attr name="font_variant" />
     </declare-styleable>
 
+    <declare-styleable name="CustomImageView">
+        <attr name="aspectRatio" format="string" />
+    </declare-styleable>
+
 </resources>
