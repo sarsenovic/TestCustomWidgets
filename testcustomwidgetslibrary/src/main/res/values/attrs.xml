@@ -15,23 +15,49 @@
     <attr name="defaultFontName" format="string" />
     <attr name="defaultFontVariant" format="string" />
 
+    <attr name="aspectRatio" format="enum">
+        <enum name="cetiri_prema_tri" value="43" />
+        <enum name="sesnaest_prema_devet" value="169" />
+        <enum name="dva_prema_jedan" value="21" />
+    </attr>
+    <attr name="fixedParam" format="enum">
+        <enum name="fixed_width" value="0" />
+        <enum name="fixed_height" value="1" />
+    </attr>
+
     <declare-styleable name="CustomTextView">
         <attr name="font_name" />
         <attr name="font_variant" />
+        <!--<attr name="aspectRatio" />-->
+        <!--<attr name="fixedParam" />-->
+    </declare-styleable>
+
+    <declare-styleable name="CustomAutocompleteTextView">
+        <attr name="font_name" />
+        <attr name="font_variant" />
+        <!--<attr name="aspectRatio" />-->
+        <!--<attr name="fixedParam" />-->
     </declare-styleable>
 
     <declare-styleable name="CustomEditText">
         <attr name="font_name" />
         <attr name="font_variant" />
+        <!--<attr name="aspectRatio" />-->
+        <!--<attr name="fixedParam" />-->
     </declare-styleable>
 
     <declare-styleable name="CustomButton">
         <attr name="font_name" />
         <attr name="font_variant" />
+        <!--<attr name="aspectRatio" />-->
+        <!--<attr name="fixedParam" />-->
     </declare-styleable>
 
     <declare-styleable name="CustomImageView">
-        <attr name="aspectRatio" format="string" />
+        <attr name="aspectRatio" />
+        <attr name="fixedParam" />
+        <!--<attr name="customHorizontalRatio" format="integer" />-->
+        <!--<attr name="customVerticalRatio" format="integer" />-->
     </declare-styleable>
 
 </resources>

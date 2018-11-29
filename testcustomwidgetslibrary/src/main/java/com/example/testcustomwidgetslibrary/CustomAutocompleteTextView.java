@@ -7,6 +7,7 @@ import android.widget.AutoCompleteTextView;
 
 @SuppressLint("AppCompatCustomView")
 public class CustomAutocompleteTextView extends AutoCompleteTextView {
+
     public CustomAutocompleteTextView(Context context) {
         super(context);
     }

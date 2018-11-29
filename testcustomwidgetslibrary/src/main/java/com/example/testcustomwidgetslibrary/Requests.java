@@ -27,8 +27,10 @@ public class Requests {
     private Context context;
     private LoadingDialog loadingDialog;
     private OkHttpClient okHttpClient;
-    private PostRequestListener postRequestListenerCallback;
+    private RequestListener postRequestListenerCallback;
+    private RequestListener getRequestListenerCallback;
     private ANRequest.PostRequestBuilder postRequestBuilder;
+    private ANRequest.GetRequestBuilder getRequestBuilder;
 
     public Requests(Context context) {
         this.context = context;
@@ -36,19 +38,20 @@ public class Requests {
 
     /**
      * Builds a post request.
-     * @param context Context.
-     * @param urlString Url koji gadjamo.
-     * @param bodyParams Mapa<String, Object> parametara koji se salju.
+     *
+     * @param context                Context.
+     * @param urlString              Url koji gadjamo.
+     * @param bodyParams             Mapa<String, Object> parametara koji se salju.
      * @param typeOfExpectedResponse Naziv ocekivanog tipa response-a (Moguci su jsonObject (jsonobject, object), jsonArray (jsonarray, array), String (string)).
-     * @param sendAsJSON boolean koji je true ako podatke saljemo kao jsonObject (U ovom slucaju se bodyParams automatski konvertuju u jsonObject).
-     * @param postCallback Interface za uspesno i neuspesno izvrsavanje request-a.
-     * @param showLoadingDialog boolean koji je true ako zelimo da prikazemo loading dialog.
-     * @param contentTypeString String koji predstavlja CONTENT_TYPE u request-u (Ako se ostavi prazan ovaj parametar CONTENT_TYPE se u tom slucaju ne salje).
-     * @param headerParamsMap Mapa<String, String> parametara koji se salju u header-u request-a.
-     * @param tag String koji svaki request obelezava razlicitim imenom. (Za slucaj ako u oviru jedne klase postoji vise postRequest metoda pa njima se moze pristupiti preko ovog indikatora).
+     * @param sendAsJSON             boolean koji je true ako podatke saljemo kao jsonObject (U ovom slucaju se bodyParams automatski konvertuju u jsonObject).
+     * @param postCallback           Interface za uspesno i neuspesno izvrsavanje request-a.
+     * @param showLoadingDialog      boolean koji je true ako zelimo da prikazemo loading dialog.
+     * @param contentTypeString      String koji predstavlja CONTENT_TYPE u request-u (Ako se ostavi prazan ovaj parametar CONTENT_TYPE se u tom slucaju ne salje).
+     * @param headerParamsMap        Mapa<String, String> parametara koji se salju u header-u request-a.
+     * @param tag                    String koji svaki request obelezava razlicitim imenom. (Za slucaj ako u oviru jedne klase postoji vise postRequest metoda pa njima se moze pristupiti preko ovog indikatora).
      */
     public void makePostRequest(final Context context, String urlString, Map<String, Object> bodyParams, String typeOfExpectedResponse, boolean sendAsJSON,
-                                final PostRequestListener postCallback, final boolean showLoadingDialog, String contentTypeString, Map<String, String> headerParamsMap, final String tag) {
+                                final RequestListener postCallback, final boolean showLoadingDialog, String contentTypeString, Map<String, String> headerParamsMap, final String tag) {
         if (urlString != null) {
 
             this.postRequestListenerCallback = postCallback;
@@ -176,6 +179,145 @@ public class Requests {
 
                                 postRequestListenerCallback = null;
                                 postRequestBuilder = null;
+                            }
+                        });
+                        break;
+
+                    default:
+                        ToastMessage.toaster(context, "Invalid type");
+                        break;
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Builds a get request.
+     *
+     * @param context                Context.
+     * @param urlString              Url koji gadjamo.
+     * @param bodyParams             Mapa<String, Object> parametara koji se salju.
+     * @param typeOfExpectedResponse Naziv ocekivanog tipa response-a (Moguci su jsonObject (jsonobject, object), jsonArray (jsonarray, array), String (string)).
+     * @param getCallback            Interface za uspesno i neuspesno izvrsavanje request-a.
+     * @param showLoadingDialog      boolean koji je true ako zelimo da prikazemo loading dialog.
+     * @param headerParamsMap        Mapa<String, String> parametara koji se salju u header-u request-a.
+     * @param tag                    String koji svaki request obelezava razlicitim imenom. (Za slucaj ako u oviru jedne klase postoji vise postRequest metoda pa njima se moze pristupiti preko ovog indikatora).
+     */
+    public void makeGetRequest(final Context context, String urlString, Map<String, Object> bodyParams, String typeOfExpectedResponse,
+                               final RequestListener getCallback, final boolean showLoadingDialog, Map<String, String> headerParamsMap, final String tag) {
+        if (urlString != null) {
+
+            this.getRequestListenerCallback = getCallback;
+
+            if (showLoadingDialog)
+                showLoadingDialog(context);
+
+            getRequestBuilder = AndroidNetworking.get(urlString)
+                    .setOkHttpClient(getOkHttpClient());
+
+            if (headerParamsMap != null && headerParamsMap.size() > 0) {
+                for (Map.Entry<String, String> entry : headerParamsMap.entrySet()) {
+                    getRequestBuilder.addHeaders(entry.getKey(), entry.getValue());
+                }
+            }
+
+            Map<String, Object> mainMap = new HashMap<>();
+
+            if (bodyParams != null)
+                mainMap.putAll(bodyParams);
+
+            if (!mainMap.isEmpty()) {
+                for (Map.Entry<String, Object> entry : mainMap.entrySet()) {
+//                    getRequestBuilder.addBodyParameter(entry.getKey(), String.valueOf(entry.getValue()));
+                }
+            }
+
+            if (typeOfExpectedResponse != null && !typeOfExpectedResponse.equals("")) {
+                switch (typeOfExpectedResponse) {
+
+                    case "jsonObject":
+                    case "jsonobject":
+                    case "object":
+
+                        getRequestBuilder.build().getAsJSONObject(new JSONObjectRequestListener() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                if (response != null) {
+                                    getCallback.onRequestLoadSuccessful(response, tag);
+                                }
+                                if (showLoadingDialog)
+                                    hideLoadingDialog();
+
+                                getRequestListenerCallback = null;
+                                getRequestBuilder = null;
+                            }
+
+                            @Override
+                            public void onError(ANError anError) {
+                                getCallback.onRequestLoadFailed(anError, tag);
+                                if (showLoadingDialog)
+                                    hideLoadingDialog();
+
+                                getRequestListenerCallback = null;
+                                getRequestBuilder = null;
+                            }
+                        });
+                        break;
+
+                    case "jsonArray":
+                    case "jsonarray":
+                    case "array":
+
+                        getRequestBuilder.build().getAsJSONArray(new JSONArrayRequestListener() {
+                            @Override
+                            public void onResponse(JSONArray response) {
+                                if (response != null) {
+                                    getCallback.onRequestLoadSuccessful(response, tag);
+                                }
+                                if (showLoadingDialog)
+                                    hideLoadingDialog();
+
+                                getRequestListenerCallback = null;
+                                getRequestBuilder = null;
+                            }
+
+                            @Override
+                            public void onError(ANError anError) {
+                                getCallback.onRequestLoadFailed(anError, tag);
+                                if (showLoadingDialog)
+                                    hideLoadingDialog();
+
+                                getRequestListenerCallback = null;
+                                getRequestBuilder = null;
+                            }
+                        });
+                        break;
+
+                    case "String":
+                    case "string":
+
+                        getRequestBuilder.build().getAsString(new StringRequestListener() {
+                            @Override
+                            public void onResponse(String response) {
+                                if (response != null) {
+                                    getCallback.onRequestLoadSuccessful(response, tag);
+                                }
+                                if (showLoadingDialog)
+                                    hideLoadingDialog();
+
+                                getRequestListenerCallback = null;
+                                getRequestBuilder = null;
+                            }
+
+                            @Override
+                            public void onError(ANError anError) {
+                                getCallback.onRequestLoadFailed(anError, tag);
+                                if (showLoadingDialog)
+                                    hideLoadingDialog();
+
+                                getRequestListenerCallback = null;
+                                getRequestBuilder = null;
                             }
                         });
                         break;

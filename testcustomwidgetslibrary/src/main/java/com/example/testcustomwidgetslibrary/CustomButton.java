@@ -7,6 +7,7 @@ import android.widget.Button;
 
 @SuppressLint("AppCompatCustomView")
 public class CustomButton extends Button {
+
     public CustomButton(Context context) {
         super(context);
     }
@@ -22,6 +23,5 @@ public class CustomButton extends Button {
     }
 
     private void setTypography(AttributeSet attributeSet) {
-        LoaderForFonts.setTypography(this, attributeSet);
     }
 }

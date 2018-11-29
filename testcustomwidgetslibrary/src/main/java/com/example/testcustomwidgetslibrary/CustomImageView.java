@@ -9,7 +9,7 @@ import android.widget.ImageView;
 
 @SuppressLint("AppCompatCustomView")
 public class CustomImageView extends ImageView {
-    private String aspectRatio;
+    private Calculations calculations = new Calculations();
 
     public CustomImageView(Context context) {
         super(context);
@@ -17,27 +17,12 @@ public class CustomImageView extends ImageView {
 
     public CustomImageView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        checkScalingType(context, attrs);
+        calculations.checkScalingType(context, attrs);
     }
 
     public CustomImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        checkScalingType(context, attrs);
-    }
-
-    private void checkScalingType(Context context, AttributeSet attributeSet) {
-        if (attributeSet != null) {
-            TypedArray typedArray = context.getTheme().obtainStyledAttributes(
-                    attributeSet,
-                    R.styleable.CustomImageView,
-                    0, 0);
-
-            try {
-                aspectRatio = typedArray.getString(R.styleable.CustomImageView_aspectRatio);
-            } finally {
-                typedArray.recycle();
-            }
-        }
+        calculations.checkScalingType(context, attrs);
     }
 
     @Override
@@ -47,11 +32,21 @@ public class CustomImageView extends ImageView {
         int width = getMeasuredWidth();
         int height = getMeasuredHeight();
 
-        if (aspectRatio != null) {
-            if (aspectRatio.equals("43")) {
-                height = (3 * width) / 4;
-            } else if (aspectRatio.equals("169")) {
-                height = (9 * width) / 16;
+        if (calculations != null) {
+            if (calculations.getAspectRatio() != null) {
+                if (calculations.getFixedParam() != null && !calculations.getFixedParam().equals("")) {
+                    if (calculations.getFixedParam().equals("0")) {
+                        //width is fixed
+//                        height = ratioCalculation(calculations.getAspectRatio(), width);
+                        height = calculations.ratioCalculation(calculations.getAspectRatio(), width);
+                    } else if (calculations.getFixedParam().equals("1")) {
+                        //height is fixed
+                        width = calculations.ratioCalculation(calculations.getAspectRatio(), height);
+                    }
+                } else {
+                    //Default, width is fixed
+                    height = calculations.ratioCalculation(calculations.getAspectRatio(), width);
+                }
             }
         }
 
