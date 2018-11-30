@@ -1,6 +1,7 @@
 package com.example.testcustomwidgetslibrary;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.ANRequest;
@@ -8,11 +9,13 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.StringRequestListener;
+import com.androidnetworking.interfaces.UploadProgressListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -23,17 +26,22 @@ import okhttp3.OkHttpClient;
  * Builds a request with customizable params.
  */
 public class Requests {
+    private final String TAG = "RequestsTag";
     public static final String CONTENT_TYPE = "application/json";
     private Context context;
     private LoadingDialog loadingDialog;
     private OkHttpClient okHttpClient;
     private RequestListener postRequestListenerCallback;
     private RequestListener getRequestListenerCallback;
+    private RequestUploadListener multipartFileRequestListenerCallback;
     private ANRequest.PostRequestBuilder postRequestBuilder;
     private ANRequest.GetRequestBuilder getRequestBuilder;
+    private ANRequest.MultiPartBuilder multiPartBuilder;
+    private boolean loggingEnabled = false;
 
-    public Requests(Context context) {
+    public Requests(Context context, boolean loggingEnabled) {
         this.context = context;
+        this.loggingEnabled = loggingEnabled;
     }
 
     /**
@@ -50,7 +58,7 @@ public class Requests {
      * @param headerParamsMap        Mapa<String, String> parametara koji se salju u header-u request-a.
      * @param tag                    String koji svaki request obelezava razlicitim imenom. (Za slucaj ako u oviru jedne klase postoji vise postRequest metoda pa njima se moze pristupiti preko ovog indikatora).
      */
-    public void makePostRequest(final Context context, String urlString, Map<String, Object> bodyParams, String typeOfExpectedResponse, boolean sendAsJSON,
+    public void createPostRequest(final Context context, String urlString, Map<String, Object> bodyParams, String typeOfExpectedResponse, boolean sendAsJSON,
                                 final RequestListener postCallback, final boolean showLoadingDialog, String contentTypeString, Map<String, String> headerParamsMap, final String tag) {
         if (urlString != null) {
 
@@ -70,6 +78,9 @@ public class Requests {
                     postRequestBuilder.addHeaders(entry.getKey(), entry.getValue());
                 }
             }
+
+            if (tag != null && !tag.equals(""))
+                postRequestBuilder.setTag(tag);
 
             Map<String, Object> mainMap = new HashMap<>();
 
@@ -184,7 +195,7 @@ public class Requests {
                         break;
 
                     default:
-                        ToastMessage.toaster(context, "Invalid type");
+                        ToastMessage.toaster(context, "Invalid response type");
                         break;
                 }
             }
@@ -197,14 +208,15 @@ public class Requests {
      *
      * @param context                Context.
      * @param urlString              Url koji gadjamo.
-     * @param bodyParams             Mapa<String, Object> parametara koji se salju.
+     * @param queryParams            Mapa<String, Object> parametara koji se salju.
+     * @param pathParams             Mapa<String, Object> parametara koji se salju.
      * @param typeOfExpectedResponse Naziv ocekivanog tipa response-a (Moguci su jsonObject (jsonobject, object), jsonArray (jsonarray, array), String (string)).
      * @param getCallback            Interface za uspesno i neuspesno izvrsavanje request-a.
      * @param showLoadingDialog      boolean koji je true ako zelimo da prikazemo loading dialog.
      * @param headerParamsMap        Mapa<String, String> parametara koji se salju u header-u request-a.
-     * @param tag                    String koji svaki request obelezava razlicitim imenom. (Za slucaj ako u oviru jedne klase postoji vise postRequest metoda pa njima se moze pristupiti preko ovog indikatora).
+     * @param tag                    String koji svaki request obelezava razlicitim imenom. (Za slucaj ako u oviru jedne klase postoji vise getRequest metoda pa njima se moze pristupiti preko ovog indikatora).
      */
-    public void makeGetRequest(final Context context, String urlString, Map<String, Object> bodyParams, String typeOfExpectedResponse,
+    public void createGetRequest(final Context context, String urlString, Map<String, Object> queryParams, Map<String, Object> pathParams, String typeOfExpectedResponse,
                                final RequestListener getCallback, final boolean showLoadingDialog, Map<String, String> headerParamsMap, final String tag) {
         if (urlString != null) {
 
@@ -222,14 +234,18 @@ public class Requests {
                 }
             }
 
-            Map<String, Object> mainMap = new HashMap<>();
+            if (tag != null && !tag.equals(""))
+                getRequestBuilder.setTag(tag);
 
-            if (bodyParams != null)
-                mainMap.putAll(bodyParams);
+            if (queryParams != null && !queryParams.isEmpty()) {
+                for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
+                    getRequestBuilder.addQueryParameter(entry.getKey(), String.valueOf(entry.getValue()));
+                }
+            }
 
-            if (!mainMap.isEmpty()) {
-                for (Map.Entry<String, Object> entry : mainMap.entrySet()) {
-//                    getRequestBuilder.addBodyParameter(entry.getKey(), String.valueOf(entry.getValue()));
+            if (pathParams != null && !pathParams.isEmpty()) {
+                for (Map.Entry<String, Object> entry : pathParams.entrySet()) {
+                    getRequestBuilder.addPathParameter(entry.getKey(), String.valueOf(entry.getValue()));
                 }
             }
 
@@ -323,10 +339,169 @@ public class Requests {
                         break;
 
                     default:
-                        ToastMessage.toaster(context, "Invalid type");
+                        ToastMessage.toaster(context, "Invalid response type");
                         break;
                 }
             }
+        }
+    }
+
+
+    public void uploadFileToServer(final Context context, String urlString, Map<String, Object> multipartParameters, File file, String fileName, String typeOfExpectedResponse, boolean sendAsJsonObject,
+                                   final RequestListener uploadCallback, final boolean showLoadingDialog, String contentTypeString, Map<String, String> headerParamsMap, final String tag) {
+        if (context != null) {
+            if (urlString != null) {
+                multiPartBuilder = AndroidNetworking.upload(urlString)
+                        .setOkHttpClient(getOkHttpClient());
+
+                if (contentTypeString != null && !contentTypeString.equals(""))
+                    multiPartBuilder.setContentType(contentTypeString);
+
+                if (headerParamsMap != null && headerParamsMap.size() > 0) {
+                    for (Map.Entry<String, String> entry : headerParamsMap.entrySet()) {
+                        multiPartBuilder.addHeaders(entry.getKey(), entry.getValue());
+                    }
+                }
+
+                if (multipartParameters!= null && multipartParameters.size() > 0) {
+                    for (Map.Entry<String, Object> entry : multipartParameters.entrySet()) {
+                        multiPartBuilder.addMultipartParameter(entry.getKey(), String.valueOf(entry.getValue()));
+                    }
+                }
+
+                if (file != null) {
+                    if (fileName != null) {
+                        multiPartBuilder.addMultipartFile(fileName, file);
+                    }
+                }
+
+                if (tag != null && !tag.equals("")) {
+                    multiPartBuilder.setTag(tag);
+                }
+
+                if (typeOfExpectedResponse != null && !typeOfExpectedResponse.equals("")) {
+                    switch (typeOfExpectedResponse) {
+
+                        case "jsonObject":
+                        case "jsonobject":
+                        case "object":
+
+                            multiPartBuilder.build()
+                                    .setUploadProgressListener(new UploadProgressListener() {
+                                        @Override
+                                        public void onProgress(long bytesUploaded, long totalBytes) {
+
+                                        }
+                                    })
+                                    .getAsJSONObject(new JSONObjectRequestListener() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    if (response != null) {
+                                        multipartFileRequestListenerCallback.onRequestUploadSuccessful(response, tag);
+                                    }
+                                    if (showLoadingDialog)
+                                        hideLoadingDialog();
+
+                                    multipartFileRequestListenerCallback = null;
+                                    multiPartBuilder = null;
+                                }
+
+                                @Override
+                                public void onError(ANError anError) {
+                                    multipartFileRequestListenerCallback.onRequestUploadFailed(anError, tag);
+                                    if (showLoadingDialog)
+                                        hideLoadingDialog();
+
+                                    multipartFileRequestListenerCallback = null;
+                                    multiPartBuilder = null;
+                                }
+                            });
+                            break;
+
+                        case "jsonArray":
+                        case "jsonarray":
+                        case "array":
+
+                            getRequestBuilder.build()
+                                    .setUploadProgressListener(new UploadProgressListener() {
+                                        @Override
+                                        public void onProgress(long bytesUploaded, long totalBytes) {
+
+                                        }
+                                    })
+                                    .getAsJSONArray(new JSONArrayRequestListener() {
+                                @Override
+                                public void onResponse(JSONArray response) {
+                                    if (response != null) {
+                                        multipartFileRequestListenerCallback.onRequestUploadSuccessful(response, tag);
+                                    }
+                                    if (showLoadingDialog)
+                                        hideLoadingDialog();
+
+                                    multipartFileRequestListenerCallback = null;
+                                    multiPartBuilder = null;
+                                }
+
+                                @Override
+                                public void onError(ANError anError) {
+                                    multipartFileRequestListenerCallback.onRequestUploadFailed(anError, tag);
+                                    if (showLoadingDialog)
+                                        hideLoadingDialog();
+
+                                    multipartFileRequestListenerCallback = null;
+                                    multiPartBuilder = null;
+                                }
+                            });
+                            break;
+
+                        case "String":
+                        case "string":
+
+                            getRequestBuilder.build()
+                                    .setUploadProgressListener(new UploadProgressListener() {
+                                        @Override
+                                        public void onProgress(long bytesUploaded, long totalBytes) {
+
+                                        }
+                                    })
+                                    .getAsString(new StringRequestListener() {
+                                @Override
+                                public void onResponse(String response) {
+                                    if (response != null) {
+                                        multipartFileRequestListenerCallback.onRequestUploadSuccessful(response, tag);
+                                    }
+                                    if (showLoadingDialog)
+                                        hideLoadingDialog();
+
+                                    multipartFileRequestListenerCallback = null;
+                                    multiPartBuilder = null;
+                                }
+
+                                @Override
+                                public void onError(ANError anError) {
+                                    multipartFileRequestListenerCallback.onRequestUploadFailed(anError, tag);
+                                    if (showLoadingDialog)
+                                        hideLoadingDialog();
+
+                                    multipartFileRequestListenerCallback = null;
+                                    multiPartBuilder = null;
+                                }
+                            });
+                            break;
+
+                        default:
+                            ToastMessage.toaster(context, "Invalid response type");
+                            break;
+                    }
+                }
+
+
+
+            } else {
+                loge("URL is null");
+            }
+        } else {
+            loge("Context is null");
         }
     }
 
@@ -352,6 +527,16 @@ public class Requests {
         }
 
         return okHttpClient;
+    }
+
+    private void loge(String message) {
+        if (loggingEnabled)
+            Log.e(TAG, message);
+    }
+
+    private void logi(String message) {
+        if (loggingEnabled)
+            Log.i(TAG, message);
     }
 
 }

@@ -15,7 +15,7 @@ import java.util.HashMap;
 /**
  * Created by sarsenovic on 26/11/18.
  */
-public class LoaderForFonts {
+class LoaderForFonts {
     private static String TAG = "LoaderForFonts";
     private static String SEPARATOR = "-";
     private static String FONT_ROOT = "fonts";
