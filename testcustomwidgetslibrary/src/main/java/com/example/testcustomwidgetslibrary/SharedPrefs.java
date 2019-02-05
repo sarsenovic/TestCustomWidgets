@@ -19,9 +19,10 @@ public class SharedPrefs {
 
     /**
      * Creates an instance from class SharedPrefs
-     * @param context Context.
-     * @param prefsName not null String which is name of Shared Preference
-     * @param mode int mode (access modifier)
+     *
+     * @param context        Context.
+     * @param prefsName      not null String which is name of Shared Preference
+     * @param mode           int mode (access modifier)
      * @param loggingEnabled boolean - true if you allow to make changes in log
      */
     public SharedPrefs(Context context, String prefsName, int mode, boolean loggingEnabled) {
@@ -51,6 +52,7 @@ public class SharedPrefs {
 
     /**
      * Returns true if requested parameter exist in Shared Preferences
+     *
      * @param parameter Requested parameter for search
      */
     public boolean checkIfParameterExist(String parameter) {
@@ -81,7 +83,8 @@ public class SharedPrefs {
 
     /**
      * Create or edit Shared Preferences
-     * @param params parameters to insert or update
+     *
+     * @param params          parameters to insert or update
      * @param editPreferences true if you want to edit your Shared Preferences, false if you want to create it
      */
     public void updatePrefs(Map<String, Object> params, boolean editPreferences) {
@@ -175,15 +178,19 @@ public class SharedPrefs {
             } else if (parameterValue instanceof Boolean) {
                 return "boolean";
             } else {
+                if (loggingEnabled)
+                    loge("Unknown type of parameter (String, Integer, Long, Float and Boolean are included");
                 return null;
             }
         } else {
+            loge("Parameter value is null while getting type of parameter");
             return null;
         }
     }
 
     /**
      * Removes one parameter from Shared Preferences
+     *
      * @param parameterKey key of the parameter which you want to remove
      */
     public void removeParameterFromSharedPrefs(String parameterKey) {
@@ -230,8 +237,52 @@ public class SharedPrefs {
     }
 
     /**
-     * Returns a String from Shared Preferences
+     * Puts one param in Shared Preferences
+     *
      * @param parameterKey key of the parameter which you want to receive
+     * @param objectValue  value of parameter which you want to put into sp
+     */
+    public void addOneParameterInPrefs(String parameterKey, Object objectValue) {
+        if (context != null) {
+            SharedPreferences sharedPreferences = context.getSharedPreferences(prefsName, mode);
+            if (sharedPreferences != null) {
+                if (parameterKey != null && !parameterKey.equals("")) {
+                    if (objectValue != null) {
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        if (objectValue instanceof String) {
+                            editor.putString(parameterKey, (String) objectValue);
+                            editor.apply();
+                        } else if (objectValue instanceof Integer) {
+                            editor.putInt(parameterKey, (Integer) objectValue);
+                            editor.apply();
+                        } else if (objectValue instanceof Long) {
+                            editor.putLong(parameterKey, (Long) objectValue);
+                            editor.apply();
+                        } else if (objectValue instanceof Float) {
+                            editor.putFloat(parameterKey, (Float) objectValue);
+                            editor.apply();
+                        } else if (objectValue instanceof Boolean) {
+                            editor.putBoolean(parameterKey, (Boolean) objectValue);
+                            editor.apply();
+                        } else {
+                            loge(parameterKey + " cannot be added in " + prefsName);
+                        }
+                    }
+                } else {
+                    loge(parameterKey + " is null, or it's empty from method parameters. Check it and try again");
+                }
+            } else {
+                loge("Shared Preferences is null");
+            }
+        } else {
+            loge("Context is null");
+        }
+    }
+
+    /**
+     * Returns a String from Shared Preferences
+     *
+     * @param parameterKey       key of the parameter which you want to receive
      * @param defaultStringValue default value of requested parameter
      */
     public String getStringValueFromPrefs(String parameterKey, String defaultStringValue) {
@@ -255,13 +306,14 @@ public class SharedPrefs {
             return defaultStringValue;
         } else {
             loge("Context is null");
+            return null;
         }
-        return null;
     }
 
     /**
      * Returns an int from Shared Preferences
-     * @param parameterKey key of the parameter which you want to receive
+     *
+     * @param parameterKey    key of the parameter which you want to receive
      * @param defaultIntValue default value of requested parameter
      */
     public int getIntValueFromPrefs(String parameterKey, int defaultIntValue) {
@@ -285,13 +337,14 @@ public class SharedPrefs {
             return defaultIntValue;
         } else {
             loge("Context is null");
+            return 0;
         }
-        return 0;
     }
 
     /**
      * Returns a long from Shared Preferences
-     * @param parameterKey key of the parameter which you want to receive
+     *
+     * @param parameterKey     key of the parameter which you want to receive
      * @param defaultLongValue default value of requested parameter
      */
     public long getLongValueFromPrefs(String parameterKey, long defaultLongValue) {
@@ -315,13 +368,14 @@ public class SharedPrefs {
             return defaultLongValue;
         } else {
             loge("Context is null");
+            return 0L;
         }
-        return 0L;
     }
 
     /**
      * Returns a float from Shared Preferences
-     * @param parameterKey key of the parameter which you want to receive
+     *
+     * @param parameterKey      key of the parameter which you want to receive
      * @param defaultFloatValue default value of requested parameter
      */
     public float getFloatValueFromPrefs(String parameterKey, float defaultFloatValue) {
@@ -346,13 +400,14 @@ public class SharedPrefs {
             return defaultFloatValue;
         } else {
             loge("Context is null");
+            return 0f;
         }
-        return 0f;
     }
 
     /**
      * Returns a boolean from Shared Preferences
-     * @param parameterKey key of the parameter which you want to receive
+     *
+     * @param parameterKey        key of the parameter which you want to receive
      * @param defaultBooleanValue default value of requested parameter
      */
     public boolean getBooleanValueFromPrefs(String parameterKey, boolean defaultBooleanValue) {
@@ -377,12 +432,13 @@ public class SharedPrefs {
             return defaultBooleanValue;
         } else {
             loge("Context is null");
+            return false;
         }
-        return false;
     }
 
     /**
      * Prints message in error log.
+     *
      * @param message not null String for show message in log (error)
      */
     private void loge(String message) {
@@ -392,6 +448,7 @@ public class SharedPrefs {
 
     /**
      * Prints message in info log.
+     *
      * @param message not null String for show message in log (info)
      */
     private void logi(String message) {

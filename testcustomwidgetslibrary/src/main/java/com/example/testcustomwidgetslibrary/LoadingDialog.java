@@ -3,7 +3,6 @@ package com.example.testcustomwidgetslibrary;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.view.KeyEvent;
 
 import com.androidnetworking.AndroidNetworking;
@@ -12,56 +11,55 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LoadingDialog {
-    private static final String HEX_PATTERN = "^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$";
     private ProgressDialog dialog;
-    private Pattern pattern;
-    private Matcher matcher;
-    private int color;
+    private String message;
+    private boolean cancelable;
+    private boolean cancelableOnTouchOutside;
+    private boolean dismissOnBackClick;
+    private int style;
+    private short tag;
 
-//    String hexColor;
-    String colorString;
-    String style;
-    String message;
-    boolean cancelable;
-    boolean cancelableOnTouchOutside;
-    boolean dismissOnBackClick;
-//    private Res res;
+    /**
+     * 0 for STYLE_SPINNER
+     * 1 for STYLE_HORIZONTAL
+     */
+    private int loadingProgressStyle;
 
-//    public LoadingDialog(Context context, String colorString, String style, String message, boolean dismissOnBackClick) {
-//        this.colorString = colorString;
-//        this.style = style;
-//        this.message = message;
-//        this.dismissOnBackClick = dismissOnBackClick;
-//
-////        pattern = Pattern.compile(HEX_PATTERN);
-////        matcher = pattern.matcher(hexColor);
-//
-//        show(context);
-//    }
+    public LoadingDialog() {
+    }
 
-    public LoadingDialog(Context context, String message, boolean dismissOnBackClick) {
+    /**
+     * If you have android os version below LOLLIPOP, you ought to add this line in your dialog style
+     * <item name="android:windowBackground">@color/transparent</item>
+     */
+
+
+
+    public LoadingDialog(String message, boolean dismissOnBackClick, int style, int loadingProgressStyle) {
         this.message = message;
         this.dismissOnBackClick = dismissOnBackClick;
+        this.style = style;
+        this.loadingProgressStyle = loadingProgressStyle;
+    }
 
-//        pattern = Pattern.compile(HEX_PATTERN);
-//        matcher = pattern.matcher(hexColor);
-
-        show(context);
+    public LoadingDialog(String message, boolean dismissOnBackClick, int style, int loadingProgressStyle, boolean cancelableOnTouchOutside, boolean cancelable) {
+        this.message = message;
+        this.dismissOnBackClick = dismissOnBackClick;
+        this.style = style;
+        this.loadingProgressStyle = loadingProgressStyle;
+        this.cancelable = cancelable;
+        this.cancelableOnTouchOutside = cancelableOnTouchOutside;
     }
 
     public void show(Context context) {
-
-//        if (matcher.matches()) {
-//            color = Color.parseColor(hexColor);
-//
-////            res = new Res(context.getResources());
-////            res.getColor();
-//        }
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP){
-            dialog = new ProgressDialog(context, R.style.LoadingDialogStyle);
-        } else{
-            dialog = new ProgressDialog(context, R.style.LoadingDialogStyle2);
+        if (style == 0) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                dialog = new ProgressDialog(context, R.style.LoadingDialogStyle);
+            } else {
+                dialog = new ProgressDialog(context, R.style.LoadingDialogStyle2);
+            }
+        } else {
+            dialog = new ProgressDialog(context, style);
         }
 
         dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
@@ -73,14 +71,17 @@ public class LoadingDialog {
                         dialog.dismiss();
                     }
                 }
-
                 return true;
             }
         });
 
-
-
-        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        if (loadingProgressStyle == 0) {
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        } else if (loadingProgressStyle == 1) {
+            dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        } else {
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        }
 
         if (message == null) {
             dialog.setMessage(context.getString(R.string.loading_dialog));
@@ -118,5 +119,21 @@ public class LoadingDialog {
 
     public void setCancelableOnTouchOutside(boolean cancelableOnTouchOutside) {
         this.cancelableOnTouchOutside = cancelableOnTouchOutside;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public boolean isDismissOnBackClick() {
+        return dismissOnBackClick;
+    }
+
+    public void setDismissOnBackClick(boolean dismissOnBackClick) {
+        this.dismissOnBackClick = dismissOnBackClick;
     }
 }
