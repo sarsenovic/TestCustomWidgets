@@ -28,11 +28,24 @@ public class LoadingDialog {
     public LoadingDialog() {
     }
 
+    public LoadingDialog(Context context, String message, boolean dismissOnBackClick) {
+        this.message = message;
+        this.dismissOnBackClick = dismissOnBackClick;
+        show(context);
+    }
+
+    public LoadingDialog(Context context, String message, boolean dismissOnBackClick, int style, int loadingProgressStyle) {
+        this.message = message;
+        this.dismissOnBackClick = dismissOnBackClick;
+        this.style = style;
+        this.loadingProgressStyle = loadingProgressStyle;
+        show(context);
+    }
+
     /**
      * If you have android os version below LOLLIPOP, you ought to add this line in your dialog style
      * <item name="android:windowBackground">@color/transparent</item>
      */
-
 
 
     public LoadingDialog(String message, boolean dismissOnBackClick, int style, int loadingProgressStyle) {
