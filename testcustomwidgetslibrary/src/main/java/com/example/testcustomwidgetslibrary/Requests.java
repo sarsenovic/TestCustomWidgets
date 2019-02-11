@@ -175,7 +175,7 @@ public class Requests {
                                         postCallback.onRequestLoadSuccessful(response, tag);
                                     }
                                     if (showLoadingDialog)
-                                        hideLoadingDialog();
+                                        hideLoadingDialog(tag);
 
                                     requestListenerCallback = null;
                                     postRequestBuilder = null;
@@ -186,7 +186,7 @@ public class Requests {
                                     postCallback.onRequestLoadFailed(anError, tag);
                                     loge("onError " + "-> errorCode:" + String.valueOf(anError.getErrorCode()) + ", error:" + String.valueOf(anError.getErrorDetail()));
                                     if (showLoadingDialog)
-                                        hideLoadingDialog();
+                                        hideLoadingDialog(tag);
 
                                     requestListenerCallback = null;
                                     postRequestBuilder = null;
@@ -206,7 +206,7 @@ public class Requests {
                                         postCallback.onRequestLoadSuccessful(response, tag);
                                     }
                                     if (showLoadingDialog)
-                                        hideLoadingDialog();
+                                        hideLoadingDialog(tag);
 
                                     requestListenerCallback = null;
                                     postRequestBuilder = null;
@@ -217,7 +217,7 @@ public class Requests {
                                     postCallback.onRequestLoadFailed(anError, tag);
                                     loge("onError " + "-> errorCode:" + String.valueOf(anError.getErrorCode()) + ", error:" + String.valueOf(anError.getErrorDetail()));
                                     if (showLoadingDialog)
-                                        hideLoadingDialog();
+                                        hideLoadingDialog(tag);
 
                                     requestListenerCallback = null;
                                     postRequestBuilder = null;
@@ -236,7 +236,7 @@ public class Requests {
                                         postCallback.onRequestLoadSuccessful(response, tag);
                                     }
                                     if (showLoadingDialog)
-                                        hideLoadingDialog();
+                                        hideLoadingDialog(tag);
 
                                     requestListenerCallback = null;
                                     postRequestBuilder = null;
@@ -247,7 +247,7 @@ public class Requests {
                                     postCallback.onRequestLoadFailed(anError, tag);
                                     loge("onError " + "-> errorCode:" + String.valueOf(anError.getErrorCode()) + ", error:" + String.valueOf(anError.getErrorDetail()));
                                     if (showLoadingDialog)
-                                        hideLoadingDialog();
+                                        hideLoadingDialog(tag);
 
                                     requestListenerCallback = null;
                                     postRequestBuilder = null;
@@ -542,7 +542,7 @@ public class Requests {
                                     getCallback.onRequestLoadSuccessful(response, tag);
                                 }
                                 if (showLoadingDialog)
-                                    hideLoadingDialog();
+                                    hideLoadingDialog(tag);
 
                                 requestListenerCallback = null;
                                 getRequestBuilder = null;
@@ -553,7 +553,7 @@ public class Requests {
                                 getCallback.onRequestLoadFailed(anError, tag);
                                 loge("onError " + "-> errorCode:" + String.valueOf(anError.getErrorCode()) + ", error:" + String.valueOf(anError.getErrorDetail()));
                                 if (showLoadingDialog)
-                                    hideLoadingDialog();
+                                    hideLoadingDialog(tag);
 
                                 requestListenerCallback = null;
                                 getRequestBuilder = null;
@@ -572,7 +572,7 @@ public class Requests {
                                     getCallback.onRequestLoadSuccessful(response, tag);
                                 }
                                 if (showLoadingDialog)
-                                    hideLoadingDialog();
+                                    hideLoadingDialog(tag);
 
                                 requestListenerCallback = null;
                                 getRequestBuilder = null;
@@ -583,7 +583,7 @@ public class Requests {
                                 getCallback.onRequestLoadFailed(anError, tag);
                                 loge("onError " + "-> errorCode:" + String.valueOf(anError.getErrorCode()) + ", error:" + String.valueOf(anError.getErrorDetail()));
                                 if (showLoadingDialog)
-                                    hideLoadingDialog();
+                                    hideLoadingDialog(tag);
 
                                 requestListenerCallback = null;
                                 getRequestBuilder = null;
@@ -601,7 +601,7 @@ public class Requests {
                                     getCallback.onRequestLoadSuccessful(response, tag);
                                 }
                                 if (showLoadingDialog)
-                                    hideLoadingDialog();
+                                    hideLoadingDialog(tag);
 
                                 requestListenerCallback = null;
                                 getRequestBuilder = null;
@@ -612,7 +612,7 @@ public class Requests {
                                 getCallback.onRequestLoadFailed(anError, tag);
                                 loge("onError " + "-> errorCode:" + String.valueOf(anError.getErrorCode()) + ", error:" + String.valueOf(anError.getErrorDetail()));
                                 if (showLoadingDialog)
-                                    hideLoadingDialog();
+                                    hideLoadingDialog(tag);
 
                                 requestListenerCallback = null;
                                 getRequestBuilder = null;
