@@ -10,6 +10,7 @@ import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.StringRequestListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
+import com.example.testcustomwidgetslibrary.exception.TagiException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -267,22 +268,23 @@ public class Requests {
     /**
      * Builds a post request.
      *
-     * @param urlString                         Url koji gadjamo.
-     * @param bodyParams                        Mapa<String, Object> parametara koji se salju.
-     * @param typeOfExpectedResponse            Naziv ocekivanog tipa response-a (Moguci su jsonObject (jsonobject, object), jsonArray (jsonarray, array), String (string)).
-     * @param sendAsJSON                        boolean koji je true ako podatke saljemo kao jsonObject (U ovom slucaju se bodyParams automatski konvertuju u jsonObject).
-     * @param postCallback                      Interface za uspesno i neuspesno izvrsavanje request-a.
-     * @param showLoadingDialog                 boolean koji je true ako zelimo da prikazemo loading dialog.
-     * @param loadingDialogMessage              Message which will be displayed in loading dialog
-     * @param loadingDialogStyle                Style of loading dialog (0 is for default)
-     * @param loadingDialogProgressStyle        0 for spinner, 1 for loading progress bar
-     * @param dismissLoadingDialogOnBackClick   true if you want to dismiss dialog with system back click
-     * @param contentTypeString                 String koji predstavlja CONTENT_TYPE u request-u (Ako se ostavi prazan ovaj parametar CONTENT_TYPE se u tom slucaju ne salje).
-     * @param headerParamsMap                   Mapa<String, String> parametara koji se salju u header-u request-a.
-     * @param tag                               String koji svaki request obelezava razlicitim imenom. (Za slucaj ako u oviru jedne klase postoji vise postRequest metoda pa njima se moze pristupiti preko ovog indikatora).
+     * @param urlString                       Url koji gadjamo.
+     * @param bodyParams                      Mapa<String, Object> parametara koji se salju.
+     * @param typeOfExpectedResponse          Naziv ocekivanog tipa response-a (Moguci su jsonObject (jsonobject, object), jsonArray (jsonarray, array), String (string)).
+     * @param sendAsJSON                      boolean koji je true ako podatke saljemo kao jsonObject (U ovom slucaju se bodyParams automatski konvertuju u jsonObject).
+     * @param postCallback                    Interface za uspesno i neuspesno izvrsavanje request-a.
+     * @param showLoadingDialog               boolean koji je true ako zelimo da prikazemo loading dialog.
+     * @param loadingDialogMessage            Message which will be displayed in loading dialog
+     * @param loadingDialogStyle              Style of loading dialog (0 is for default)
+     * @param loadingDialogProgressStyle      0 for spinner, 1 for loading progress bar
+     * @param dismissLoadingDialogOnBackClick true if you want to dismiss dialog with system back click
+     * @param contentTypeString               String koji predstavlja CONTENT_TYPE u request-u (Ako se ostavi prazan ovaj parametar CONTENT_TYPE se u tom slucaju ne salje).
+     * @param headerParamsMap                 Mapa<String, String> parametara koji se salju u header-u request-a.
+     * @param tag                             String koji svaki request obelezava razlicitim imenom. (Za slucaj ako u oviru jedne klase postoji vise postRequest metoda pa njima se moze pristupiti preko ovog indikatora).
      */
     public void createPostRequest(String urlString, Map<String, Object> bodyParams, String typeOfExpectedResponse, boolean sendAsJSON,
-                                  final RequestListener postCallback, final boolean showLoadingDialog, String loadingDialogMessage, int loadingDialogStyle, int loadingDialogProgressStyle, boolean dismissLoadingDialogOnBackClick, String contentTypeString, Map<String, String> headerParamsMap, final String tag) {
+                                  final RequestListener postCallback, final boolean showLoadingDialog, String loadingDialogMessage, int loadingDialogStyle, int loadingDialogProgressStyle,
+                                  boolean dismissLoadingDialogOnBackClick, String contentTypeString, Map<String, String> headerParamsMap, final String tag) throws TagiException {
         if (context != null) {
             if (urlString != null) {
 
@@ -291,6 +293,12 @@ public class Requests {
                 if (showLoadingDialog) {
                     LoadingDialog loadingDialog = new LoadingDialog(loadingDialogMessage, dismissLoadingDialogOnBackClick, loadingDialogStyle, loadingDialogProgressStyle, true, true);
                     if (tag != null && !tag.equals("")) {
+                        for (Map.Entry<String, Object> entry : dialogsMap.entrySet()) {
+                            if (tag.equalsIgnoreCase(entry.getKey())) {
+                                loge("Tag already exist!");
+                                throw new TagiException("Tag already exist!");
+                            }
+                        }
                         dialogsMap.put(tag, loadingDialog);
                         showLoadingDialog(context, loadingDialog, tag);
                     }
@@ -451,21 +459,23 @@ public class Requests {
     /**
      * Builds a get request.
      *
-     * @param urlString              Url koji gadjamo.
-     * @param queryParams            Mapa<String, Object> parametara koji se salju.
-     * @param pathParams             Mapa<String, Object> parametara koji se salju.
-     * @param typeOfExpectedResponse Naziv ocekivanog tipa response-a (Moguci su jsonObject (jsonobject, object), jsonArray (jsonarray, array), String (string)).
-     * @param getCallback            Interface za uspesno i neuspesno izvrsavanje request-a.
-     * @param showLoadingDialog      boolean koji je true ako zelimo da prikazemo loading dialog.
-     * @param loadingDialogMessage              Message which will be displayed in loading dialog
-     * @param loadingDialogStyle                Style of loading dialog (0 is for default)
-     * @param loadingDialogProgressStyle        0 for spinner, 1 for loading progress bar
-     * @param dismissLoadingDialogOnBackClick   true if you want to dismiss dialog with system back click
-     * @param headerParamsMap        Mapa<String, String> parametara koji se salju u header-u request-a.
-     * @param tag                    String koji svaki request obelezava razlicitim imenom. (Za slucaj ako u oviru jedne klase postoji vise getRequest metoda pa njima se moze pristupiti preko ovog indikatora).
+     * @param urlString                       Url koji gadjamo.
+     * @param queryParams                     Mapa<String, Object> parametara koji se salju.
+     * @param pathParams                      Mapa<String, Object> parametara koji se salju.
+     * @param typeOfExpectedResponse          Naziv ocekivanog tipa response-a (Moguci su jsonObject (jsonobject, object), jsonArray (jsonarray, array), String (string)).
+     * @param getCallback                     Interface za uspesno i neuspesno izvrsavanje request-a.
+     * @param showLoadingDialog               boolean koji je true ako zelimo da prikazemo loading dialog.
+     * @param loadingDialogMessage            Message which will be displayed in loading dialog
+     * @param loadingDialogStyle              Style of loading dialog (0 is for default)
+     * @param loadingDialogProgressStyle      0 for spinner, 1 for loading progress bar
+     * @param dismissLoadingDialogOnBackClick true if you want to dismiss dialog with system back click
+     * @param headerParamsMap                 Mapa<String, String> parametara koji se salju u header-u request-a.
+     * @param tag                             String koji svaki request obelezava razlicitim imenom. (Za slucaj ako u oviru jedne klase postoji vise getRequest metoda pa njima se moze pristupiti preko ovog indikatora).
      */
     public void createGetRequest(String urlString, Map<String, Object> queryParams, Map<String, Object> pathParams, String typeOfExpectedResponse,
-                                 final RequestListener getCallback, final boolean showLoadingDialog, String loadingDialogMessage, int loadingDialogStyle, int loadingDialogProgressStyle, boolean dismissLoadingDialogOnBackClick, Map<String, String> headerParamsMap, final String tag) {
+                                 final RequestListener getCallback, final boolean showLoadingDialog, String loadingDialogMessage,
+                                 int loadingDialogStyle, int loadingDialogProgressStyle, boolean dismissLoadingDialogOnBackClick,
+                                 Map<String, String> headerParamsMap, final String tag) throws TagiException {
         if (urlString != null) {
 
             this.requestListenerCallback = getCallback;
@@ -476,6 +486,12 @@ public class Requests {
             if (showLoadingDialog) {
                 LoadingDialog loadingDialog = new LoadingDialog(loadingDialogMessage, dismissLoadingDialogOnBackClick, loadingDialogStyle, loadingDialogProgressStyle, true, true);
                 if (tag != null && !tag.equals("")) {
+                    for (Map.Entry<String, Object> entry : dialogsMap.entrySet()) {
+                        if (tag.equalsIgnoreCase(entry.getKey())) {
+                            loge("Tag already exist!");
+                            throw new TagiException("Tag already exist!");
+                        }
+                    }
                     dialogsMap.put(tag, loadingDialog);
                     showLoadingDialog(context, loadingDialog, tag);
                 }
