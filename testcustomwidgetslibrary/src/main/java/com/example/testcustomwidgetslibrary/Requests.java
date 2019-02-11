@@ -277,22 +277,19 @@ public class Requests {
      * @param loadingDialogStyle                Style of loading dialog (0 is for default)
      * @param loadingDialogProgressStyle        0 for spinner, 1 for loading progress bar
      * @param dismissLoadingDialogOnBackClick   true if you want to dismiss dialog with system back click
-     * @param cancelableOnTouchOutside          true if you want to dismiss dialog with tap out of dialog layout
-     * @param cancelable                        true if dialog is cancelable
      * @param contentTypeString                 String koji predstavlja CONTENT_TYPE u request-u (Ako se ostavi prazan ovaj parametar CONTENT_TYPE se u tom slucaju ne salje).
      * @param headerParamsMap                   Mapa<String, String> parametara koji se salju u header-u request-a.
      * @param tag                               String koji svaki request obelezava razlicitim imenom. (Za slucaj ako u oviru jedne klase postoji vise postRequest metoda pa njima se moze pristupiti preko ovog indikatora).
      */
     public void createPostRequest(String urlString, Map<String, Object> bodyParams, String typeOfExpectedResponse, boolean sendAsJSON,
-                                  final RequestListener postCallback, final boolean showLoadingDialog, String loadingDialogMessage, int loadingDialogStyle, int loadingDialogProgressStyle, boolean dismissLoadingDialogOnBackClick,
-                                  boolean cancelableOnTouchOutside, boolean cancelable, String contentTypeString, Map<String, String> headerParamsMap, final String tag) {
+                                  final RequestListener postCallback, final boolean showLoadingDialog, String loadingDialogMessage, int loadingDialogStyle, int loadingDialogProgressStyle, boolean dismissLoadingDialogOnBackClick, String contentTypeString, Map<String, String> headerParamsMap, final String tag) {
         if (context != null) {
             if (urlString != null) {
 
                 this.requestListenerCallback = postCallback;
 
                 if (showLoadingDialog) {
-                    LoadingDialog loadingDialog = new LoadingDialog(loadingDialogMessage, dismissLoadingDialogOnBackClick, loadingDialogStyle, loadingDialogProgressStyle, cancelableOnTouchOutside, cancelable);
+                    LoadingDialog loadingDialog = new LoadingDialog(loadingDialogMessage, dismissLoadingDialogOnBackClick, loadingDialogStyle, loadingDialogProgressStyle, true, true);
                     if (tag != null && !tag.equals("")) {
                         dialogsMap.put(tag, loadingDialog);
                         showLoadingDialog(context, loadingDialog, tag);
