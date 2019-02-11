@@ -361,6 +361,7 @@ public class Requests {
                             postRequestBuilder.build().getAsJSONObject(new JSONObjectRequestListener() {
                                 @Override
                                 public void onResponse(JSONObject response) {
+                                    dialogsMap.remove(tag);
                                     if (response != null) {
                                         logi("Successful response");
                                         postCallback.onRequestLoadSuccessful(response, tag);
@@ -374,6 +375,7 @@ public class Requests {
 
                                 @Override
                                 public void onError(ANError anError) {
+                                    dialogsMap.remove(tag);
                                     postCallback.onRequestLoadFailed(anError, tag);
                                     loge("onError " + "-> errorCode:" + String.valueOf(anError.getErrorCode()) + ", error:" + String.valueOf(anError.getErrorDetail()));
                                     if (showLoadingDialog)
@@ -392,6 +394,7 @@ public class Requests {
                             postRequestBuilder.build().getAsJSONArray(new JSONArrayRequestListener() {
                                 @Override
                                 public void onResponse(JSONArray response) {
+                                    dialogsMap.remove(tag);
                                     if (response != null) {
                                         logi("Successful response");
                                         postCallback.onRequestLoadSuccessful(response, tag);
@@ -405,6 +408,7 @@ public class Requests {
 
                                 @Override
                                 public void onError(ANError anError) {
+                                    dialogsMap.remove(tag);
                                     postCallback.onRequestLoadFailed(anError, tag);
                                     loge("onError " + "-> errorCode:" + String.valueOf(anError.getErrorCode()) + ", error:" + String.valueOf(anError.getErrorDetail()));
                                     if (showLoadingDialog)
@@ -422,6 +426,7 @@ public class Requests {
                             postRequestBuilder.build().getAsString(new StringRequestListener() {
                                 @Override
                                 public void onResponse(String response) {
+                                    dialogsMap.remove(tag);
                                     if (response != null) {
                                         logi("Successful response");
                                         postCallback.onRequestLoadSuccessful(response, tag);
@@ -435,6 +440,7 @@ public class Requests {
 
                                 @Override
                                 public void onError(ANError anError) {
+                                    dialogsMap.remove(tag);
                                     postCallback.onRequestLoadFailed(anError, tag);
                                     loge("onError " + "-> errorCode:" + String.valueOf(anError.getErrorCode()) + ", error:" + String.valueOf(anError.getErrorDetail()));
                                     if (showLoadingDialog)
@@ -538,6 +544,7 @@ public class Requests {
                         getRequestBuilder.build().getAsJSONObject(new JSONObjectRequestListener() {
                             @Override
                             public void onResponse(JSONObject response) {
+                                dialogsMap.remove(tag);
                                 if (response != null) {
                                     getCallback.onRequestLoadSuccessful(response, tag);
                                 }
@@ -550,6 +557,7 @@ public class Requests {
 
                             @Override
                             public void onError(ANError anError) {
+                                dialogsMap.remove(tag);
                                 getCallback.onRequestLoadFailed(anError, tag);
                                 loge("onError " + "-> errorCode:" + String.valueOf(anError.getErrorCode()) + ", error:" + String.valueOf(anError.getErrorDetail()));
                                 if (showLoadingDialog)
@@ -568,6 +576,7 @@ public class Requests {
                         getRequestBuilder.build().getAsJSONArray(new JSONArrayRequestListener() {
                             @Override
                             public void onResponse(JSONArray response) {
+                                dialogsMap.remove(tag);
                                 if (response != null) {
                                     getCallback.onRequestLoadSuccessful(response, tag);
                                 }
@@ -580,6 +589,7 @@ public class Requests {
 
                             @Override
                             public void onError(ANError anError) {
+                                dialogsMap.remove(tag);
                                 getCallback.onRequestLoadFailed(anError, tag);
                                 loge("onError " + "-> errorCode:" + String.valueOf(anError.getErrorCode()) + ", error:" + String.valueOf(anError.getErrorDetail()));
                                 if (showLoadingDialog)
@@ -597,6 +607,7 @@ public class Requests {
                         getRequestBuilder.build().getAsString(new StringRequestListener() {
                             @Override
                             public void onResponse(String response) {
+                                dialogsMap.remove(tag);
                                 if (response != null) {
                                     getCallback.onRequestLoadSuccessful(response, tag);
                                 }
@@ -609,6 +620,7 @@ public class Requests {
 
                             @Override
                             public void onError(ANError anError) {
+                                dialogsMap.remove(tag);
                                 getCallback.onRequestLoadFailed(anError, tag);
                                 loge("onError " + "-> errorCode:" + String.valueOf(anError.getErrorCode()) + ", error:" + String.valueOf(anError.getErrorDetail()));
                                 if (showLoadingDialog)
