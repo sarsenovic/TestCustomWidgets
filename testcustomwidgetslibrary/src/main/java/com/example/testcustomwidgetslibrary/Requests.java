@@ -108,6 +108,12 @@ public class Requests {
                 if (showLoadingDialog) {
                     LoadingDialog loadingDialog = new LoadingDialog(loadingDialogMessage, false, 0, 0, false, false);
                     if (tag != null && !tag.equals("")) {
+                        for (Map.Entry<String, Object> entry : dialogsMap.entrySet()) {
+                            if (tag.equalsIgnoreCase(entry.getKey())) {
+                                loge("Tag already exist!, Change tag and try again.");
+                                return;
+                            }
+                        }
                         dialogsMap.put(tag, loadingDialog);
                         showLoadingDialog(context, loadingDialog, tag);
                     }
