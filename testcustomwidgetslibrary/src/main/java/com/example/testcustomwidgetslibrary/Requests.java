@@ -10,7 +10,7 @@ import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.StringRequestListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
-import com.example.testcustomwidgetslibrary.exception.TagiException;
+import com.example.testcustomwidgetslibrary.exception.TagException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -284,7 +284,7 @@ public class Requests {
      */
     public void createPostRequest(String urlString, Map<String, Object> bodyParams, String typeOfExpectedResponse, boolean sendAsJSON,
                                   final RequestListener postCallback, final boolean showLoadingDialog, String loadingDialogMessage, int loadingDialogStyle, int loadingDialogProgressStyle,
-                                  boolean dismissLoadingDialogOnBackClick, String contentTypeString, Map<String, String> headerParamsMap, final String tag) throws TagiException {
+                                  boolean dismissLoadingDialogOnBackClick, String contentTypeString, Map<String, String> headerParamsMap, final String tag) throws TagException {
         if (context != null) {
             if (urlString != null) {
 
@@ -296,7 +296,7 @@ public class Requests {
                         for (Map.Entry<String, Object> entry : dialogsMap.entrySet()) {
                             if (tag.equalsIgnoreCase(entry.getKey())) {
                                 loge("Tag already exist!");
-                                throw new TagiException("Tag already exist!");
+                                throw new TagException("Tag already exist!");
                             }
                         }
                         dialogsMap.put(tag, loadingDialog);
@@ -475,7 +475,7 @@ public class Requests {
     public void createGetRequest(String urlString, Map<String, Object> queryParams, Map<String, Object> pathParams, String typeOfExpectedResponse,
                                  final RequestListener getCallback, final boolean showLoadingDialog, String loadingDialogMessage,
                                  int loadingDialogStyle, int loadingDialogProgressStyle, boolean dismissLoadingDialogOnBackClick,
-                                 Map<String, String> headerParamsMap, final String tag) throws TagiException {
+                                 Map<String, String> headerParamsMap, final String tag) throws TagException {
         if (urlString != null) {
 
             this.requestListenerCallback = getCallback;
@@ -489,7 +489,7 @@ public class Requests {
                     for (Map.Entry<String, Object> entry : dialogsMap.entrySet()) {
                         if (tag.equalsIgnoreCase(entry.getKey())) {
                             loge("Tag already exist!");
-                            throw new TagiException("Tag already exist!");
+                            throw new TagException("Tag already exist!");
                         }
                     }
                     dialogsMap.put(tag, loadingDialog);
