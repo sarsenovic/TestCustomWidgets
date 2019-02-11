@@ -457,17 +457,29 @@ public class Requests {
      * @param typeOfExpectedResponse Naziv ocekivanog tipa response-a (Moguci su jsonObject (jsonobject, object), jsonArray (jsonarray, array), String (string)).
      * @param getCallback            Interface za uspesno i neuspesno izvrsavanje request-a.
      * @param showLoadingDialog      boolean koji je true ako zelimo da prikazemo loading dialog.
+     * @param loadingDialogMessage              Message which will be displayed in loading dialog
+     * @param loadingDialogStyle                Style of loading dialog (0 is for default)
+     * @param loadingDialogProgressStyle        0 for spinner, 1 for loading progress bar
+     * @param dismissLoadingDialogOnBackClick   true if you want to dismiss dialog with system back click
      * @param headerParamsMap        Mapa<String, String> parametara koji se salju u header-u request-a.
      * @param tag                    String koji svaki request obelezava razlicitim imenom. (Za slucaj ako u oviru jedne klase postoji vise getRequest metoda pa njima se moze pristupiti preko ovog indikatora).
      */
     public void createGetRequest(String urlString, Map<String, Object> queryParams, Map<String, Object> pathParams, String typeOfExpectedResponse,
-                                 final RequestListener getCallback, final boolean showLoadingDialog, Map<String, String> headerParamsMap, final String tag) {
+                                 final RequestListener getCallback, final boolean showLoadingDialog, String loadingDialogMessage, int loadingDialogStyle, int loadingDialogProgressStyle, boolean dismissLoadingDialogOnBackClick, Map<String, String> headerParamsMap, final String tag) {
         if (urlString != null) {
 
             this.requestListenerCallback = getCallback;
 
-            if (showLoadingDialog)
-                showLoadingDialog(context);
+//            if (showLoadingDialog)
+//                showLoadingDialog(context);
+
+            if (showLoadingDialog) {
+                LoadingDialog loadingDialog = new LoadingDialog(loadingDialogMessage, dismissLoadingDialogOnBackClick, loadingDialogStyle, loadingDialogProgressStyle, true, true);
+                if (tag != null && !tag.equals("")) {
+                    dialogsMap.put(tag, loadingDialog);
+                    showLoadingDialog(context, loadingDialog, tag);
+                }
+            }
 
             getRequestBuilder = AndroidNetworking.get(urlString)
                     .setOkHttpClient(getOkHttpClient());
