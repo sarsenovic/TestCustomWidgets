@@ -170,12 +170,14 @@ public class Requests {
                             postRequestBuilder.build().getAsJSONObject(new JSONObjectRequestListener() {
                                 @Override
                                 public void onResponse(JSONObject response) {
+                                    if (showLoadingDialog) {
+                                        hideLoadingDialog(tag);
+                                        dialogsMap.remove(tag);
+                                    }
                                     if (response != null) {
                                         logi("Successful response");
                                         postCallback.onRequestLoadSuccessful(response, tag);
                                     }
-                                    if (showLoadingDialog)
-                                        hideLoadingDialog(tag);
 
                                     requestListenerCallback = null;
                                     postRequestBuilder = null;
@@ -183,10 +185,12 @@ public class Requests {
 
                                 @Override
                                 public void onError(ANError anError) {
+                                    if (showLoadingDialog) {
+                                        hideLoadingDialog(tag);
+                                        dialogsMap.remove(tag);
+                                    }
                                     postCallback.onRequestLoadFailed(anError, tag);
                                     loge("onError " + "-> errorCode:" + String.valueOf(anError.getErrorCode()) + ", error:" + String.valueOf(anError.getErrorDetail()));
-                                    if (showLoadingDialog)
-                                        hideLoadingDialog(tag);
 
                                     requestListenerCallback = null;
                                     postRequestBuilder = null;
@@ -201,12 +205,14 @@ public class Requests {
                             postRequestBuilder.build().getAsJSONArray(new JSONArrayRequestListener() {
                                 @Override
                                 public void onResponse(JSONArray response) {
+                                    if (showLoadingDialog) {
+                                        hideLoadingDialog(tag);
+                                        dialogsMap.remove(tag);
+                                    }
                                     if (response != null) {
                                         logi("Successful response");
                                         postCallback.onRequestLoadSuccessful(response, tag);
                                     }
-                                    if (showLoadingDialog)
-                                        hideLoadingDialog(tag);
 
                                     requestListenerCallback = null;
                                     postRequestBuilder = null;
@@ -214,10 +220,12 @@ public class Requests {
 
                                 @Override
                                 public void onError(ANError anError) {
+                                    if (showLoadingDialog) {
+                                        hideLoadingDialog(tag);
+                                        dialogsMap.remove(tag);
+                                    }
                                     postCallback.onRequestLoadFailed(anError, tag);
                                     loge("onError " + "-> errorCode:" + String.valueOf(anError.getErrorCode()) + ", error:" + String.valueOf(anError.getErrorDetail()));
-                                    if (showLoadingDialog)
-                                        hideLoadingDialog(tag);
 
                                     requestListenerCallback = null;
                                     postRequestBuilder = null;
@@ -231,12 +239,14 @@ public class Requests {
                             postRequestBuilder.build().getAsString(new StringRequestListener() {
                                 @Override
                                 public void onResponse(String response) {
+                                    if (showLoadingDialog) {
+                                        hideLoadingDialog(tag);
+                                        dialogsMap.remove(tag);
+                                    }
                                     if (response != null) {
                                         logi("Successful response");
                                         postCallback.onRequestLoadSuccessful(response, tag);
                                     }
-                                    if (showLoadingDialog)
-                                        hideLoadingDialog(tag);
 
                                     requestListenerCallback = null;
                                     postRequestBuilder = null;
@@ -244,10 +254,12 @@ public class Requests {
 
                                 @Override
                                 public void onError(ANError anError) {
+                                    if (showLoadingDialog) {
+                                        hideLoadingDialog(tag);
+                                        dialogsMap.remove(tag);
+                                    }
                                     postCallback.onRequestLoadFailed(anError, tag);
                                     loge("onError " + "-> errorCode:" + String.valueOf(anError.getErrorCode()) + ", error:" + String.valueOf(anError.getErrorDetail()));
-                                    if (showLoadingDialog)
-                                        hideLoadingDialog(tag);
 
                                     requestListenerCallback = null;
                                     postRequestBuilder = null;
