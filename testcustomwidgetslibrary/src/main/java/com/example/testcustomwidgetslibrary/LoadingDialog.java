@@ -103,7 +103,8 @@ public class LoadingDialog {
         }
 
         dialog.setIndeterminate(true);
-        dialog.setCanceledOnTouchOutside(cancelableOnTouchOutside);
+//        dialog.setCanceledOnTouchOutside(cancelableOnTouchOutside);
+        dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(cancelable);
         dialog.show();
     }
