@@ -486,6 +486,192 @@ public class Requests {
         }
     }
 
+    /**
+     * Builds a post request.
+     *
+     * @param urlString                       Url koji gadjamo.
+     * @param typeOfExpectedResponse          Naziv ocekivanog tipa response-a (Moguci su jsonObject (jsonobject, object), jsonArray (jsonarray, array), String (string)).
+     * @param postCallback                    Interface za uspesno i neuspesno izvrsavanje request-a.
+     * @param showLoadingDialog               boolean koji je true ako zelimo da prikazemo loading dialog.
+     * @param loadingDialogMessage            Message which will be displayed in loading dialog
+     * @param loadingDialogStyle              Style of loading dialog (0 is for default)
+     * @param loadingDialogProgressStyle      0 for spinner, 1 for loading progress bar
+     * @param dismissLoadingDialogOnBackClick true if you want to dismiss dialog with system back click
+     * @param contentTypeString               String koji predstavlja CONTENT_TYPE u request-u (Ako se ostavi prazan ovaj parametar CONTENT_TYPE se u tom slucaju ne salje).
+     * @param headerParamsMap                 Mapa<String, String> parametara koji se salju u header-u request-a.
+     * @param byteArray                       Niz bajtova fajla
+     * @param tag                             String koji svaki request obelezava razlicitim imenom. (Za slucaj ako u oviru jedne klase postoji vise postRequest metoda pa njima se moze pristupiti preko ovog indikatora).
+     */
+    public void createByteArrayPostRequest(String urlString, String typeOfExpectedResponse, final RequestListener postCallback,
+                                           final boolean showLoadingDialog, String loadingDialogMessage, int loadingDialogStyle, int loadingDialogProgressStyle,
+                                           boolean dismissLoadingDialogOnBackClick, String contentTypeString, Map<String, String> headerParamsMap, byte[] byteArray, final String tag) throws TagException, NullPointerException, IndexOutOfBoundsException {
+        if (context != null) {
+            if (urlString != null) {
+
+                this.requestListenerCallback = postCallback;
+
+                if (showLoadingDialog) {
+                    LoadingDialog loadingDialog = new LoadingDialog(loadingDialogMessage, dismissLoadingDialogOnBackClick, loadingDialogStyle, loadingDialogProgressStyle, true, true);
+                    if (tag != null && !tag.equals("")) {
+                        for (Map.Entry<String, Object> entry : dialogsMap.entrySet()) {
+                            if (tag.equalsIgnoreCase(entry.getKey())) {
+                                loge("Tag already exist!");
+                                throw new TagException("Tag already exist!");
+                            }
+                        }
+                        dialogsMap.put(tag, loadingDialog);
+                        showLoadingDialog(context, loadingDialog, tag);
+                    }
+                }
+
+                postRequestBuilder = AndroidNetworking.post(urlString)
+                        .setOkHttpClient(getOkHttpClient());
+
+                if (contentTypeString != null && !contentTypeString.equals(""))
+                    postRequestBuilder.setContentType(contentTypeString);
+
+                if (headerParamsMap != null && headerParamsMap.size() > 0) {
+                    for (Map.Entry<String, String> entry : headerParamsMap.entrySet()) {
+                        postRequestBuilder.addHeaders(entry.getKey(), entry.getValue());
+                    }
+                }
+
+                if (tag != null && !tag.equals(""))
+                    postRequestBuilder.setTag(tag);
+
+                if (byteArray != null) {
+                    if (byteArray.length > 0)
+                        postRequestBuilder.addByteBody(byteArray);
+                    else
+                        throw new IndexOutOfBoundsException("Byte array length is 0");
+                } else {
+                    throw new NullPointerException("Byte array is null");
+                }
+
+                if (typeOfExpectedResponse != null && !typeOfExpectedResponse.equals("")) {
+                    switch (typeOfExpectedResponse) {
+
+                        case "jsonObject":
+                        case "jsonobject":
+                        case "json":
+                        case "object":
+
+                            postRequestBuilder.build().getAsJSONObject(new JSONObjectRequestListener() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    if (showLoadingDialog) {
+                                        hideLoadingDialog(tag);
+                                        dialogsMap.remove(tag);
+                                    }
+
+                                    if (response != null) {
+                                        logi("Successful response");
+                                        postCallback.onRequestLoadSuccessful(response, tag);
+                                    }
+
+                                    requestListenerCallback = null;
+                                    postRequestBuilder = null;
+                                }
+
+                                @Override
+                                public void onError(ANError anError) {
+                                    if (showLoadingDialog) {
+                                        hideLoadingDialog(tag);
+                                        dialogsMap.remove(tag);
+                                    }
+                                    postCallback.onRequestLoadFailed(anError, tag);
+                                    loge("onError " + "-> errorCode:" + String.valueOf(anError.getErrorCode()) + ", error:" + String.valueOf(anError.getErrorDetail()));
+
+                                    requestListenerCallback = null;
+                                    postRequestBuilder = null;
+                                }
+                            });
+                            break;
+
+                        case "jsonArray":
+                        case "jsonarray":
+                        case "array":
+
+                            postRequestBuilder.build().getAsJSONArray(new JSONArrayRequestListener() {
+                                @Override
+                                public void onResponse(JSONArray response) {
+                                    if (showLoadingDialog) {
+                                        hideLoadingDialog(tag);
+                                        dialogsMap.remove(tag);
+                                    }
+                                    if (response != null) {
+                                        logi("Successful response");
+                                        postCallback.onRequestLoadSuccessful(response, tag);
+                                    }
+
+                                    requestListenerCallback = null;
+                                    postRequestBuilder = null;
+                                }
+
+                                @Override
+                                public void onError(ANError anError) {
+                                    if (showLoadingDialog) {
+                                        hideLoadingDialog(tag);
+                                        dialogsMap.remove(tag);
+                                    }
+                                    postCallback.onRequestLoadFailed(anError, tag);
+                                    loge("onError " + "-> errorCode:" + String.valueOf(anError.getErrorCode()) + ", error:" + String.valueOf(anError.getErrorDetail()));
+
+                                    requestListenerCallback = null;
+                                    postRequestBuilder = null;
+                                }
+                            });
+                            break;
+
+                        case "String":
+                        case "string":
+
+                            postRequestBuilder.build().getAsString(new StringRequestListener() {
+                                @Override
+                                public void onResponse(String response) {
+                                    if (showLoadingDialog) {
+                                        hideLoadingDialog(tag);
+                                        dialogsMap.remove(tag);
+                                    }
+                                    if (response != null) {
+                                        logi("Successful response");
+                                        postCallback.onRequestLoadSuccessful(response, tag);
+                                    }
+
+                                    requestListenerCallback = null;
+                                    postRequestBuilder = null;
+                                }
+
+                                @Override
+                                public void onError(ANError anError) {
+                                    if (showLoadingDialog) {
+                                        hideLoadingDialog(tag);
+                                        dialogsMap.remove(tag);
+                                    }
+                                    postCallback.onRequestLoadFailed(anError, tag);
+                                    loge("onError " + "-> errorCode:" + String.valueOf(anError.getErrorCode()) + ", error:" + String.valueOf(anError.getErrorDetail()));
+
+                                    requestListenerCallback = null;
+                                    postRequestBuilder = null;
+                                }
+                            });
+                            break;
+
+                        default:
+                            ToastMessage.toaster(context, "Invalid response type");
+                            break;
+                    }
+                } else {
+                    loge("PostRequest: Type of expected response is invalid");
+                }
+            } else {
+                loge("PostRequest: URL is null");
+            }
+        } else {
+            loge("PostRequest: Context is null");
+        }
+    }
+
 
     /**
      * Builds a get request.
