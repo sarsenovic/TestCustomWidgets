@@ -60,4 +60,19 @@
         <!--<attr name="customVerticalRatio" format="integer" />-->
     </declare-styleable>
 
+    <declare-styleable name="ITSCustomCalendarView">
+        <attr name="calendarDatesTextColor" format="color" />
+        <attr name="calendarWeekDaysTextColor" format="color" />
+        <attr name="calendarBackgroundColor" format="color" />
+        <attr name="selectedDateTextColor" format="color" />
+        <attr name="selectedDateCircleIndicatorColor" format="color" />
+        <attr name="currentDateTextColor" format="color" />
+        <attr name="currentDateCircleIndicatorColor" format="color" />
+        <attr name="calendarTextSize" format="dimension" />
+        <attr name="calendarSpacingBetweenRows" format="float" />
+        <attr name="calendarRowHeight" format="float" />
+        <attr name="font_name" />
+        <attr name="font_variant" />
+    </declare-styleable>
+
 </resources>
